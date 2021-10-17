@@ -1,15 +1,16 @@
-import { IPlayerRepository } from '../../../src/domain/models/interfaces/player-repository';
-import { PlayerService } from '../../../src/domain/services/player-service';
-import { PlayerRepositoryMock } from '../../mocks';
+import { IRepository } from "../../../src/domain/models/interfaces/repository";
+import { Player } from "../../../src/domain/models/player";
+import { PlayerService } from "../../../src/domain/services/player-service";
+import { PlayerRepositoryMock } from "../../mocks";
 
-describe('Player service test', () => {
-  let playerRepositoryMock: IPlayerRepository;
+describe("Player service test", () => {
+  let playerRepositoryMock: IRepository<Player>;
   beforeEach(async () => {
     playerRepositoryMock = new PlayerRepositoryMock();
   });
 
-  describe('Test listAllActors', () => {
-    it('calls repository\'s find method', async () => {
+  describe("Test listAllActors", () => {
+    it("calls repository's find method", async () => {
       // arrange
       const findMock = jest.fn();
       playerRepositoryMock.find = findMock;

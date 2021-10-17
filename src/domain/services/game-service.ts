@@ -1,17 +1,17 @@
-import { injectable, inject } from 'inversify';
-import { TYPES } from '../types';
-import { FilterQuery } from 'mongodb';
-import { Game } from '../models/game';
-import { IGameService } from './interfaces/game-service';
-import { IGameRepository } from '../models/interfaces/game-repository';
-import { CreateGameDTO, UpdateGameDTO } from '../dto/game-dtos';
-import { Pagination } from '../../utils/pagination';
-import { paginate } from '../../utils/paginate';
+import { injectable, inject } from "inversify";
+import { TYPES } from "../types";
+import { FilterQuery } from "mongodb";
+import { Game } from "../models/game";
+import { IGameService } from "./interfaces/game-service";
+import { CreateGameDTO, UpdateGameDTO } from "../dto/game-dtos";
+import { Pagination } from "../../utils/pagination";
+import { paginate } from "../../utils/paginate";
+import { IRepository } from "../models/interfaces/repository";
 
 @injectable()
 export class GameService implements IGameService {
   constructor(
-    @inject(TYPES.IGameRepository) private repository: IGameRepository
+    @inject(TYPES.IGameRepository) private repository: IRepository<Game>
   ) {}
 
   public async listAllGames(): Promise<Game[]> {

@@ -2,13 +2,14 @@ import {
   CreateGameDTO,
   UpdateGameDTO,
 } from '../../../src/domain/dto/game-dtos';
-import { IGameRepository } from '../../../src/domain/models/interfaces/game-repository';
 import { GameService } from '../../../src/domain/services/game-service';
 import { GameRepositoryMock } from '../../mocks';
 import * as paginateModule from '../../../src/utils/paginate';
+import { Game } from '../../../src/domain/models/game';
+import { IRepository } from '../../../src/domain/models/interfaces/repository';
 
 describe('Game service test', () => {
-  let gameRepositoryMock: IGameRepository;
+  let gameRepositoryMock: IRepository<Game>;
   beforeEach(async () => {
     gameRepositoryMock = new GameRepositoryMock();
   });

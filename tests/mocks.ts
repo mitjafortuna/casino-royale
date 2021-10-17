@@ -1,11 +1,9 @@
-import { Select, Sort } from '../src/domain/models/interfaces/repository';
+import { IRepository, Select, Sort } from '../src/domain/models/interfaces/repository';
 import { Game } from '../src/domain/models/game';
-import { IGameRepository } from '../src/domain/models/interfaces/game-repository';
-import { IPlayerRepository } from '../src/domain/models/interfaces/player-repository';
 import { Player } from '../src/domain/models/player';
 import { FilterQuery, Collection } from 'mongodb';
 
-export class GameRepositoryMock implements IGameRepository{
+export class GameRepositoryMock implements IRepository<Game>{
     get(id: any, select?: Select): Promise<Game> {
         throw new Error('Method not implemented.');
     }
@@ -36,7 +34,7 @@ export class GameRepositoryMock implements IGameRepository{
 
 }
 
-export class PlayerRepositoryMock implements IPlayerRepository {
+export class PlayerRepositoryMock implements IRepository<Player> {
     get(id: any, select?: Select): Promise<Player> {
         throw new Error('Method not implemented.');
     }

@@ -1,11 +1,10 @@
 import { injectable} from 'inversify';
-import { IPlayerRepository } from '../../domain/models/interfaces/player-repository';
-import { Select, Sort } from '../../domain/models/interfaces/repository';
+import { IRepository, Select, Sort } from '../../domain/models/interfaces/repository';
 import { Player } from '../../domain/models/player';
 import { FilterQuery, Collection } from 'mongodb';
 
 @injectable()
-export class PlayerRepository implements IPlayerRepository{
+export class PlayerRepository implements IRepository<Player>{
     get(id: any, select?: Select): Promise<Player> {
         throw new Error('Method not implemented.');
     }

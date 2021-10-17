@@ -9,14 +9,19 @@
     "build": "rimraf ./dist && tsc",
     "build-prod": "rimraf ./dist && tsc -p tsconfig.prod.json",
     "pretest": "yarn run build",
-    "test": "jest ./dist/tests/"
+    "test": "jest ./dist/tests/",
+    "lint": "eslint . --ext .ts"
   },
   "devDependencies": {
     "@types/jest": "^27.0.2",
     "@types/mongodb": "3.5.20",
     "@types/node": "^16.11.0",
     "@types/reflect-metadata": "^0.1.0",
-    "jest-junit-reporter": "^1.1.0"
+    "@typescript-eslint/eslint-plugin": "^5.0.0",
+    "@typescript-eslint/parser": "^5.0.0",
+    "eslint": "^8.0.1",
+    "jest-junit-reporter": "^1.1.0",
+    "typescript": "^4.4.4"
   },
   "dependencies": {
     "inversify": "5.0.1",
