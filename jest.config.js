@@ -119,7 +119,7 @@ module.exports = {
   
     // The paths to modules that run some code to configure or set up the testing environment before each test
     setupFiles: [
-      "./dist/src/di-container.js"
+      './dist/src/di-container.js'
     ],
   
     // A list of paths to modules that run some code to configure or set up the testing framework before each test
@@ -129,7 +129,7 @@ module.exports = {
     // snapshotSerializers: [],
   
     // The test environment that will be used for testing
-    testEnvironment: "node",
+    testEnvironment: 'node',
   
     // Options that will be passed to the testEnvironment
     // testEnvironmentOptions: {},
@@ -139,7 +139,7 @@ module.exports = {
   
     // The glob patterns Jest uses to detect test files
     testMatch: [
-      "**/*-test.js"
+      '**/*-test.js'
     ],
   
     // An array of regexp pattern strings that are matched against all test paths, matched tests are skipped
@@ -151,7 +151,7 @@ module.exports = {
     // testRegex: [],
   
     // This option allows the use of a custom results processor
-    testResultsProcessor: "jest-junit-reporter",
+    testResultsProcessor: 'jest-junit-reporter',
   
     // This option allows use of a custom test runner
     // testRunner: "jasmine2",
@@ -164,7 +164,8 @@ module.exports = {
   
     // A map from regular expressions to paths to transformers
     transform: {
-      "\\.js$": "<rootDir>/node_modules/babel-jest"
+        // '\\.js$': '<rootDir>/node_modules/babel-jest'
+        //"^.+\\.[t|j]sx?$": "babel-jest"
     },
   
     // An array of regexp pattern strings that are matched against all source file paths, matched files will skip transformation

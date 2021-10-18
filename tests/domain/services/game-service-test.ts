@@ -7,6 +7,7 @@ import { GameRepositoryMock } from '../../mocks';
 import * as paginateModule from '../../../src/utils/paginate';
 import { Game } from '../../../src/domain/models/game';
 import { IRepository } from '../../../src/domain/models/interfaces/repository';
+import { NotFoundError } from '../../../src/infrastructure/errors/app-errors';
 
 describe('Game service test', () => {
   let gameRepositoryMock: IRepository<Game>;
@@ -55,7 +56,7 @@ describe('Game service test', () => {
 
       // assert
       expect(paginateSpy).toBeCalled();
-  
+
       paginateSpy.mockRestore();
     });
   });
@@ -104,6 +105,15 @@ describe('Game service test', () => {
 
       // assert
       expect(getMock).toBeCalled();
+    });
+    it('should throw NotFoundError if repository\'s get method returns null', async () => {
+      // arrange
+      gameRepositoryMock.get = jest.fn(async () => null);
+      const service = new GameService(gameRepositoryMock);
+
+      // act and assert
+      await expect(service.getGame('')).rejects.toThrow(NotFoundError);
+      //await expect(service.getGame('')).rejects.toHaveProperty('message',`Game with id was not found.`);
     });
   });
 

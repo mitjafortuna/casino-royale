@@ -1,12 +1,13 @@
-import { injectable, inject } from "inversify";
-import { TYPES } from "../types";
-import { FilterQuery } from "mongodb";
-import { Game } from "../models/game";
-import { IGameService } from "./interfaces/game-service";
-import { CreateGameDTO, UpdateGameDTO } from "../dto/game-dtos";
-import { Pagination } from "../../utils/pagination";
-import { paginate } from "../../utils/paginate";
-import { IRepository } from "../models/interfaces/repository";
+import { injectable, inject } from 'inversify';
+import { TYPES } from '../types';
+import { FilterQuery } from 'mongodb';
+import { Game } from '../models/game';
+import { IGameService } from './interfaces/game-service';
+import { CreateGameDTO, UpdateGameDTO } from '../dto/game-dtos';
+import { Pagination } from '../../utils/pagination';
+import { paginate } from '../../utils/paginate';
+import { IRepository } from '../models/interfaces/repository';
+import { NotFoundError } from '../../infrastructure/errors/app-errors';
 
 @injectable()
 export class GameService implements IGameService {
@@ -36,7 +37,11 @@ export class GameService implements IGameService {
     return await this.repository.create(dto);
   }
   public async getGame(id: string): Promise<Game> {
-    return await this.repository.get(id);
+    const game = await this.repository.get(id);
+    if (game === null) {
+      throw new NotFoundError(`Game with id ${id} was not found.`);
+    }
+    return game;
   }
   public async updateGame(dto: UpdateGameDTO): Promise<void> {
     return await this.repository.updateById(dto.id, dto);
