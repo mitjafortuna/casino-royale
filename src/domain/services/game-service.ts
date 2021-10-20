@@ -3,7 +3,7 @@ import { TYPES } from '../types';
 import { FilterQuery } from 'mongodb';
 import { Game } from '../models/game';
 import { IGameService } from './interfaces/game-service';
-import { CreateGameDTO, UpdateGameDTO } from '../dto/game-dtos';
+import { CreateGameDto, GameGetDto, UpdateGameDto } from '../dto/game-dtos';
 import { Pagination } from '../../utils/pagination';
 import { paginate } from '../../utils/paginate';
 import { IRepository } from '../models/interfaces/repository';
@@ -15,17 +15,21 @@ export class GameService implements IGameService {
     @inject(TYPES.IGameRepository) private repository: IRepository<Game>
   ) {}
 
-  public async listAllGames(): Promise<Game[]> {
-    return await this.repository.find({});
-  }
+  public async getAllGames(
+    getGameDto: GameGetDto
+  ): Promise<Pagination<Game> | Game[]> {
+    const games = await this.repository.find(
+      getGameDto.filter ?? {},
+      getGameDto.limit,
+      getGameDto.pageNumber
+    );
 
-  public async listAllGamesWithPagination(
-    limit: number,
-    pageNumber: number,
-    path: string
-  ): Promise<Pagination<Game>> {
-    const games = await this.repository.find({}, limit, pageNumber);
-    return paginate(games, limit, pageNumber, path);
+    return paginate(
+      games,
+      getGameDto.path,
+      getGameDto.limit,
+      getGameDto.pageNumber
+    );
   }
 
   public async searchGames(
@@ -33,17 +37,17 @@ export class GameService implements IGameService {
   ): Promise<Game[]> {
     return await this.repository.find(filter);
   }
-  public async createGame(dto: CreateGameDTO): Promise<Game> {
+  public async createGame(dto: CreateGameDto): Promise<Game> {
     return await this.repository.create(dto);
   }
-  public async getGame(id: string): Promise<Game> {
-    const game = await this.repository.get(id);
+  public async getGame(_id: string): Promise<Game> {
+    const game = await this.repository.get(_id);
     if (game === null) {
-      throw new NotFoundError(`Game with id ${id} was not found.`);
+      throw new NotFoundError(`Game with id ${_id} was not found`);
     }
     return game;
   }
-  public async updateGame(dto: UpdateGameDTO): Promise<void> {
+  public async updateGame(dto: UpdateGameDto): Promise<void> {
     return await this.repository.updateById(dto.id, dto);
   }
   public async deleteGame(id: string): Promise<void> {

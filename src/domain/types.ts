@@ -6,6 +6,6 @@
     IPlayerService: Symbol.for('IPlayerService'),
     IPlayerRepository: Symbol.for('IPlayerRepository'),
     IGameService: Symbol.for('IGameService'),
-    IGameRepository: Symbol.for('IGameRepository'),    
+    IGameRepository: Symbol.for('IGameRepository')
   };
   

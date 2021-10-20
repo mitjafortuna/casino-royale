@@ -1,12 +1,14 @@
 import { injectable, unmanaged } from 'inversify';
-import { Collection, FilterQuery, ObjectID } from 'mongodb';
+import { Collection, FilterQuery } from 'mongodb';
 import {
   IRepository,
   Select,
   Sort,
 } from '../../domain/models/interfaces/repository';
-import { getValidObjectId } from '../../utils/utils';
 import db from '../database';
+import { NotFoundError } from '../errors/app-errors';
+import { v4 as uuid } from 'uuid';
+import { IModel } from '../../domain/models/interfaces/model';
 
 /**
  * This Repository class is the base repository. It is an abstract class because it can only be
@@ -15,22 +17,19 @@ import db from '../database';
 
  */
 @injectable()
-export default class Repository<T> implements IRepository<T> {
+export default class Repository<T extends IModel>
+  implements IRepository<T>
+{
   private readonly collection: Collection;
 
   constructor(@unmanaged() collection: string) {
     this.collection = db.getCollection(collection);
   }
 
-  public async get(id: ObjectID, select: Select = {}): Promise<T | null> {
-    const objectId = getValidObjectId(id);
-
+  public async get(_id: string, select: Select = {}): Promise<T | null> {
     const collection = this.collection;
 
-    const doc: T | null = await collection.findOne<T>(
-      { _id: objectId },
-      select
-    );
+    const doc: T | null = await collection.findOne<T>({ _id: _id }, select);
 
     return doc;
   }
@@ -65,24 +64,22 @@ export default class Repository<T> implements IRepository<T> {
     if (!data) {
       throw new Error('Empty object provided');
     }
-
+    data._id = uuid();
     const collection = this.collection;
     const doc = (await collection.insertOne(data)).ops[0] as T;
 
     return doc;
   }
 
-  public async updateById(ids: ObjectID | ObjectID[], data: Partial<T>) {
-    let objectIds = [];
-
-    if (Array.isArray(ids)) {
-      objectIds = ids.map((id) => getValidObjectId(id));
-    } else {
-      objectIds = [getValidObjectId(ids as ObjectID)];
-    }
-
+  public async updateById(_id: string, data: Partial<T>) {
     const collection = this.collection;
-    await collection.updateOne({ _id: { $in: objectIds } }, { $set: data });
+    const updateResult = await collection.updateOne(
+      { _id: { $in: [_id] } },
+      { $set: data }
+    );
+    if (updateResult.modifiedCount === 0) {
+      throw new NotFoundError();
+    }
   }
 
   public async remove(filter: FilterQuery<T>, multi: boolean): Promise<void> {
@@ -94,16 +91,13 @@ export default class Repository<T> implements IRepository<T> {
     }
   }
 
-  public async removeById(ids: ObjectID | ObjectID[]): Promise<void> {
-    let objectIds = [];
-
-    if (Array.isArray(ids)) {
-      objectIds = ids.map((id) => getValidObjectId(id));
-    } else {
-      objectIds = [getValidObjectId(ids as ObjectID)];
-    }
-
+  public async removeById(_id: string): Promise<void> {
     const collection = this.collection;
-    await collection.deleteMany({ _id: { $in: objectIds } });
+    const deleteResult = await collection.deleteOne({
+      _id: { $in: [_id] },
+    });
+    if (deleteResult.deletedCount === 0) {
+      throw new NotFoundError();
+    }
   }
 }

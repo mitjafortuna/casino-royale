@@ -1,8 +1,9 @@
+import { IModel } from './interfaces/model';
 import { Player } from './player';
 
-export class Game {
+export class Game implements IModel {
     public constructor(
-        public id: string,
+        public _id: string,
         public title: string,
         public description: string,
         public players: Player[],

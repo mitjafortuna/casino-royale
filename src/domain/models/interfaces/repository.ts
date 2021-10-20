@@ -1,4 +1,5 @@
-import { FilterQuery, ObjectId } from 'mongodb';
+import { FilterQuery } from 'mongodb';
+import { IModel } from './model';
 
 /**
  * Fields you want to select. For mongodb it is a key-value pair.
@@ -21,14 +22,14 @@ export interface Sort {
 /**
  * Base repository interface.
  */
-export interface IRepository<T> {
+export interface IRepository<T extends IModel> {
   /**
    * Receives an ID and fetch data from database by that ID.
    *
-   * @param id Id of the document
+   * @param _id Id of the document
    * @param select Field to project properties. This is optional.
    */
-  get(id: ObjectId, select?: Select): Promise<T | null>;
+  get(_id: string, select?: Select): Promise<T | null>;
 
   /**
    * Get documents from collection.
@@ -50,13 +51,19 @@ export interface IRepository<T> {
   ): Promise<T[]>;
 
   /**
+   * Edits documents from database for given ID. This method receives one ID
    * Insert one item in the collection.
    *
    * @param data Object that you want to store
    */
   create(data: Partial<T>): Promise<T>;
 
-  updateById(ids: ObjectId | ObjectId[], data: Partial<T>): Promise<void>;
+  /**
+   *  If record with ID does not exist it throws `NotFoundError`.
+   * @param _id 
+   * @param data 
+   */
+  updateById(_id: string, data: Partial<T>): Promise<void>;
 
   /**
    * It finds all the matching documents by the given filter and removes them.
@@ -66,10 +73,10 @@ export interface IRepository<T> {
   remove(filter: FilterQuery<T>, multi: boolean): Promise<void>;
 
   /**
-   * Remove documents from database by given IDs. This method receives one or more
-   * IDs. Checks if the IDs are valid and proceed to delete.
+   * Remove documents from database for given ID. This method receives one ID
+   * If record with ID does not exist it throws `NotFoundError`.
    *
-   * @param ids ObjectId | ObjectId[]
+   * @param ids string
    */
-  removeById(id: ObjectId | ObjectId[]): Promise<void>;
+  removeById(_id: string): Promise<void>;
 }

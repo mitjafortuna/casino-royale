@@ -10,11 +10,16 @@ import { PlayerRepository } from './infrastructure/repositories/player-repositor
 import { Player } from './domain/models/player';
 import { IRepository } from './domain/models/interfaces/repository';
 import { Game } from './domain/models/game';
+import PlayerApi from './api/player-api';
+import GameApi from './api/game-api';
 
 const container = new Container({
   defaultScope: 'Singleton',
   skipBaseClassChecks: true,
 });
+
+container.bind(PlayerApi).to(PlayerApi);
+container.bind(GameApi).to(GameApi);
 
 container.bind<IRepository<Game>>(TYPES.IGameRepository).to(GameRepository);
 container

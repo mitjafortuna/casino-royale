@@ -19,10 +19,10 @@ class Database {
   private mongoServer?: MongoMemoryServer;
 
   constructor() {
-    this.password = process.env.DB_PWD || '';
-    this.user = process.env.DB_USER || '';
-    this.host = process.env.DB_HOST || 'localhost:27017';
-    this.dbName = process.env.DB_NAME || 'casino-royale';
+    this.password = process.env.DB_PWD ?? '';
+    this.user = process.env.DB_USER ?? '';
+    this.host = process.env.DB_HOST ?? 'localhost:27017';
+    this.dbName = process.env.DB_NAME ?? 'casino-royale';
   }
 
   public async connect(): Promise<void> {
@@ -50,7 +50,6 @@ class Database {
     logger.info('Connected with database host');
 
     this.databaseInstance = this.dbClient.db(this.dbName);
-    logger.info('Started memory server');
   }
 
   public async disconnect() {
@@ -85,14 +84,15 @@ class Database {
   private async getConnectionString() {
     if (process.env.NODE_ENV === 'test') {
       this.mongoServer = await MongoMemoryServer.create();
+      logger.info('Started memory server');
       return this.mongoServer.getUri();
     }
 
     if (process.env.NODE_ENV !== 'localhost' && this.user && this.password) {
-      return `mongodb+srv://${this.user}:${this.password}@${this.host}/${this.dbName}`;
+      return `mongodb://${this.user}:${this.password}@${this.host}/${this.dbName}`;
     }
 
-    return `mongodb+srv://${this.host}/${this.dbName}`;
+    return `mongodb://${this.host}/${this.dbName}`;
   }
 
   public getDbHost() {

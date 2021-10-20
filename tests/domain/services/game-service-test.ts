@@ -1,6 +1,6 @@
 import {
-  CreateGameDTO,
-  UpdateGameDTO,
+  CreateGameDto,
+  UpdateGameDto,
 } from '../../../src/domain/dto/game-dtos';
 import { GameService } from '../../../src/domain/services/game-service';
 import { GameRepositoryMock } from '../../mocks';
@@ -16,34 +16,18 @@ describe('Game service test', () => {
   });
 
   describe('Test listAllGames', () => {
-    it('calls repository\'s find method', async () => {
+    it("calls repository's find method", async () => {
       // arrange
       const findMock = jest.fn();
       gameRepositoryMock.find = findMock;
       const service = new GameService(gameRepositoryMock);
 
       // act
-      await service.listAllGames();
+      await service.getAllGames({ path: '' });
 
       // assert
       expect(findMock).toBeCalled();
     });
-  });
-
-  describe('Test listAllGamesWithPagination', () => {
-    it('calls repository\'s find method', async () => {
-      // arrange
-      const findMock = jest.fn();
-      gameRepositoryMock.find = findMock;
-      const service = new GameService(gameRepositoryMock);
-
-      // act
-      await service.listAllGamesWithPagination(1, 1, '');
-
-      // assert
-      expect(findMock).toBeCalled();
-    });
-
     it('calls paginate method', async () => {
       // arrange
       const paginateSpy = jest.spyOn(paginateModule, 'paginate');
@@ -52,7 +36,7 @@ describe('Game service test', () => {
       const service = new GameService(gameRepositoryMock);
 
       // act
-      await service.listAllGamesWithPagination(1, 1, '');
+      await service.getAllGames({ path: '', limit: 1, pageNumber: 1 });
 
       // assert
       expect(paginateSpy).toBeCalled();
@@ -62,7 +46,7 @@ describe('Game service test', () => {
   });
 
   describe('Test searchGames', () => {
-    it('calls repository\'s find method', async () => {
+    it("calls repository's find method", async () => {
       // arrange
       const findMock = jest.fn();
       gameRepositoryMock.find = findMock;
@@ -77,13 +61,13 @@ describe('Game service test', () => {
   });
 
   describe('Test createGame', () => {
-    it('calls repository\'s create method', async () => {
+    it("calls repository's create method", async () => {
       // arrange
       const createMock = jest.fn();
       gameRepositoryMock.create = createMock;
       const service = new GameService(gameRepositoryMock);
 
-      const dto = {} as CreateGameDTO;
+      const dto = {} as CreateGameDto;
 
       // act
       await service.createGame(dto);
@@ -94,7 +78,7 @@ describe('Game service test', () => {
   });
 
   describe('Test getGame', () => {
-    it('calls repository\'s get method', async () => {
+    it("calls repository's get method", async () => {
       // arrange
       const getMock = jest.fn();
       gameRepositoryMock.get = getMock;
@@ -106,25 +90,25 @@ describe('Game service test', () => {
       // assert
       expect(getMock).toBeCalled();
     });
-    it('should throw NotFoundError if repository\'s get method returns null', async () => {
+    it("should throw NotFoundError if repository's get method returns null", async () => {
       // arrange
       gameRepositoryMock.get = jest.fn(async () => null);
       const service = new GameService(gameRepositoryMock);
 
       // act and assert
       await expect(service.getGame('')).rejects.toThrow(NotFoundError);
-      //await expect(service.getGame('')).rejects.toHaveProperty('message',`Game with id was not found.`);
+      //await expect(service.getGame('')).rejects.toHaveProperty('message',`Game with id was not found`);
     });
   });
 
   describe('Test updateGame', () => {
-    it('calls repository\'s updateById method', async () => {
+    it("calls repository's updateById method", async () => {
       // arrange
       const updateByIdMock = jest.fn();
       gameRepositoryMock.updateById = updateByIdMock;
       const service = new GameService(gameRepositoryMock);
 
-      const dto = {} as UpdateGameDTO;
+      const dto = {} as UpdateGameDto;
 
       // act
       await service.updateGame(dto);
@@ -135,7 +119,7 @@ describe('Game service test', () => {
   });
 
   describe('Test deleteGame', () => {
-    it('calls repository\'s removeById method', async () => {
+    it("calls repository's removeById method", async () => {
       // arrange
       const removeByIdMock = jest.fn();
       gameRepositoryMock.removeById = removeByIdMock;

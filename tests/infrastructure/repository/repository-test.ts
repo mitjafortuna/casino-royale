@@ -46,8 +46,11 @@ describe('Player repository test', () => {
     it('check if get method gets player', async () => {
       // arrange
       const createdPlayer = await createPlayer();
+      let returnedPlayer;
       //act
-      const returnedPlayer = await playerRepository.get(createdPlayer?._id);
+      if (createdPlayer) {
+        returnedPlayer = await playerRepository.get(createdPlayer._id);
+      }
       // assert
       expect(returnedPlayer).not.toBeNull();
     });
@@ -56,7 +59,7 @@ describe('Player repository test', () => {
       const createdPlayer = await createPlayer();
       // act
       const returnedPlayer = await playerRepository.find({
-        id: createdPlayer?._id,
+        _id: createdPlayer?._id,
       });
       // assert
       expect(returnedPlayer).not.toBeNull();
@@ -73,20 +76,25 @@ describe('Player repository test', () => {
           lastName: newLastName,
         });
       }
-      const returnedPlayer = await playerRepository.get(createdPlayer?._id);
+      let updatedPlayer;
+
+      if (createdPlayer) {
+        updatedPlayer = await playerRepository.get(createdPlayer._id);
+      }
       // assert
-      expect(returnedPlayer).not.toBeNull();
-      expect(createdPlayer).toMatchObject(returnedPlayer as Player);
+      expect(updatedPlayer).not.toBeNull();
+      expect(createdPlayer).toMatchObject(updatedPlayer as Player);
     });
 
     it('check if removeById method removes player', async () => {
       // arrange
       const createdPlayer = await createPlayer();
+      let returnedPlayer;
       if (createdPlayer) {
-      // act
+        // act
         await playerRepository.removeById(createdPlayer._id);
+        returnedPlayer = await playerRepository.get(createdPlayer?._id);
       }
-      const returnedPlayer = await playerRepository.get(createdPlayer?._id);
       // assert
       expect(createdPlayer).not.toBeNull();
       expect(returnedPlayer).toBeNull();

@@ -62,12 +62,6 @@ export class InvalidTokenError extends BadRequestError {
   }
 }
 
-export class InvalidIdError extends BadRequestError {
-  constructor(...args: any) {
-    super(StaticStringKeys.REPOSITORY_ERROR_INVALID_ID, args);
-  }
-}
-
 export class RepositoryMissingField extends BadRequestError {
   constructor(...args: any) {
     super('Field missing', args);

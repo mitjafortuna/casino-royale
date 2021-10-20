@@ -12,7 +12,7 @@ const logFormat = printf(({ level, message, label, timestamp }) => {
 });
 
 const logger = createLogger({
-  level: process.env.LOG_LEVEL || 'info',
+  level: process.env.LOG_LEVEL ?? 'info',
   format: combine(label({ label: process.env.NODE_ENV }), timestamp(), logFormat),
   transports: [file]
 });
