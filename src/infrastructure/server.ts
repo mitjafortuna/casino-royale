@@ -8,6 +8,7 @@ import errorHandler from './errors/error-handler';
 import logger from './logger';
 import routes from './routes';
 import dotenv from 'dotenv';
+import requestCountLogger from './request-count-logger';
 dotenv.config();
 
 export default async function createServer() {
@@ -21,7 +22,7 @@ export default async function createServer() {
       next();
     });
   }
-
+  server.use(requestCountLogger);
   server.disable('x-powered-by'); // Hide information
   server.use(compress()); // Compress
   // Enable middleware/whatever only in Production
