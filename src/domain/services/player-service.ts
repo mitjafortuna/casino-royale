@@ -32,7 +32,7 @@ export class PlayerService implements IPlayerService {
     return await this.repository.create({
       firstName: dto.firstName,
       lastName: dto.lastName,
-      movies: dto.movies,
+      birthDate: dto.birthDate,
     });
   }
   public async getPlayer(id: string): Promise<Player> {

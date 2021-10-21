@@ -4,7 +4,7 @@ import { Player } from '../models/player';
 export interface PlayerDto {
   firstName: string;
   lastName: string;
-  movies: string[];
+  birthDate: Date;
 }
 
 export interface UpdatePlayerDto extends PlayerDto {

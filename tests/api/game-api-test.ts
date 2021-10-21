@@ -16,6 +16,7 @@ if (process.env.NODE_ENV !== 'test') {
 describe('Test games Api', () => {
   let server: any;
   let gameRepository: Repository<Game>;
+  let playerRepository: Repository<Player>;
   beforeEach(async () => {
     try {
       await clearDatabase();
@@ -29,6 +30,7 @@ describe('Test games Api', () => {
       await db.connect();
       server = await createServer();
       gameRepository = new Repository<Game>('game');
+      playerRepository = new Repository<Player>('player');
     } catch (err) {
       log.error(err);
     }
@@ -47,7 +49,7 @@ describe('Test games Api', () => {
       body: {
         title?: string;
         description?: string;
-        players?: Player[];
+        playerIds?: string[];
         pictures?: string[];
       },
       code: number,
@@ -66,7 +68,7 @@ describe('Test games Api', () => {
       const body = {
         title: faker.name.title(),
         description: faker.name.middleName(),
-        players: [createPlayer(), createPlayer()],
+        playerIds: [(await createPlayer())._id, (await createPlayer())._id],
         pictures: [faker.name.firstName(), faker.name.lastName()],
       };
       await createGameRequest(body, 201);
@@ -75,7 +77,7 @@ describe('Test games Api', () => {
     it('response 400 if title field is empty', async () => {
       const body = {
         description: faker.name.middleName(),
-        players: [createPlayer(), createPlayer()],
+        playerIds: [(await createPlayer())._id, (await createPlayer())._id],
         pictures: [faker.name.firstName(), faker.name.lastName()],
       };
       await createGameRequest(body, 400, [
@@ -86,7 +88,7 @@ describe('Test games Api', () => {
     it('response 400 if description field is empty', async () => {
       const body = {
         title: faker.name.title(),
-        players: [createPlayer(), createPlayer()],
+        playerIds: [(await createPlayer())._id, (await createPlayer())._id],
         pictures: [faker.name.firstName(), faker.name.lastName()],
       };
       await createGameRequest(body, 400, [
@@ -94,7 +96,7 @@ describe('Test games Api', () => {
       ]);
     });
 
-    it('response 400 if players field is empty', async () => {
+    it('response 400 if playerIds field is empty', async () => {
       const body = {
         title: faker.name.title(),
         description: faker.name.middleName(),
@@ -102,18 +104,22 @@ describe('Test games Api', () => {
       };
       await createGameRequest(body, 400, [
         {
-          msg: 'Players should not be empty',
-          param: 'players',
+          msg: 'playerIds should not be empty',
+          param: 'playerIds',
           location: 'body',
         },
-        { msg: 'Players should be list', param: 'players', location: 'body' },
+        {
+          msg: 'playerIds should be list',
+          param: 'playerIds',
+          location: 'body',
+        },
       ]);
     });
     it('response 400 if pictures field is empty', async () => {
       const body = {
         title: faker.name.title(),
         description: faker.name.middleName(),
-        players: [createPlayer(), createPlayer()],
+        playerIds: [(await createPlayer())._id, (await createPlayer())._id],
       };
       await createGameRequest(body, 400, [
         {
@@ -137,7 +143,7 @@ describe('Test games Api', () => {
       assert.equal(typeof res.body, 'object');
       assert.equal(res.body.title, game.title);
       assert.equal(res.body.description, game.description);
-      assert.deepEqual(res.body.players, game.players);
+      assert.deepEqual(res.body.playerIds, game.playerIds);
       assert.deepEqual(res.body.pictures, game.pictures);
     });
 
@@ -148,29 +154,29 @@ describe('Test games Api', () => {
 
     it('response 200 with list of games when get all games', async () => {
       const res = await request(server).get('/game').expect(200);
-      assert.deepEqual(Array.isArray(res.body), true);
-      assert.deepEqual(res.body.length, 1);
+      assert.equal(Array.isArray(res.body), true);
+      assert.equal(res.body.length, 1);
     });
 
     it('response 200 with N number of games when get all games', async () => {
       await createNGames(5);
       const res = await request(server).get('/game').expect(200);
-      assert.deepEqual(Array.isArray(res.body), true);
-      assert.deepEqual(res.body.length, 6);
+      assert.equal(Array.isArray(res.body), true);
+      assert.equal(res.body.length, 6);
     });
 
     it('response 200 with N number of games when get all games', async () => {
       await createNGames(5);
       const res = await request(server).get('/game?limit=3').expect(200);
-      assert.deepEqual(Array.isArray(res.body), true);
-      assert.deepEqual(res.body.length, 3);
+      assert.equal(Array.isArray(res.body), true);
+      assert.equal(res.body.length, 3);
     });
 
     it('response 200 with N number of games from 2nd page when get all games', async () => {
       await createNGames(5);
       const res = await request(server).get('/game?limit=3&page=2').expect(200);
-      assert.deepEqual(Array.isArray(res.body.data), true);
-      assert.deepEqual(res.body.data.length, 3);
+      assert.equal(Array.isArray(res.body.data), true);
+      assert.equal(res.body.data.length, 3);
     });
 
     it('response 200 with found games from given query when get all games', async () => {
@@ -178,11 +184,11 @@ describe('Test games Api', () => {
       const res = await request(server)
         .get('/game?title=' + game.title)
         .expect(200);
-      assert.deepEqual(Array.isArray(res.body), true);
-      assert.deepEqual(res.body.length, 1);
+      assert.equal(Array.isArray(res.body), true);
+      assert.equal(res.body.length, 1);
       assert.equal(res.body[0].title, game.title);
       assert.equal(res.body[0].description, game.description);
-      assert.deepEqual(res.body[0].players, game.players);
+      assert.deepEqual(res.body[0].playerIds, game.playerIds);
       assert.deepEqual(res.body[0].pictures, game.pictures);
     });
   });
@@ -197,13 +203,24 @@ describe('Test games Api', () => {
       const newTitle = faker.name.title();
       await request(server)
         .patch(`/game/${game._id}`)
-        .send({ title: newTitle })
+        .send({
+          title: newTitle,
+          description: game.description,
+          pictures: game.pictures,
+          playerIds: game.playerIds,
+        })
         .expect(200);
       const res1 = await request(server).get(`/game/${game._id}`).expect(200);
       assert.equal(typeof res1.body, 'object');
       assert.equal(res1.body.title, newTitle);
     });
+  });
 
+  describe('Delete game', () => {
+    let game: Game;
+    beforeEach(async () => {
+      game = await createGame();
+    });
     it('response 200 if successfully deletes game by id and 404 when trying to get delete game', async () => {
       await request(server).delete(`/game/${game._id}`).expect(200);
       await request(server).get(`/game/${game._id}`).expect(404);
@@ -212,22 +229,26 @@ describe('Test games Api', () => {
 
   async function clearDatabase() {
     await gameRepository.remove({}, true);
+    await playerRepository.remove({}, true);
   }
 
   async function createGame(
     title?: string,
     description?: string,
-    players?: Player[],
+    playerIds?: string[],
     pictures?: string[]
   ) {
     title = title ?? faker.name.title();
     description = description ?? faker.name.middleName();
-    players = players ?? [createPlayer(), createPlayer()];
+    playerIds = playerIds ?? [
+      (await createPlayer())._id,
+      (await createPlayer())._id,
+    ];
     pictures = pictures ?? [faker.name.lastName(), faker.name.lastName()];
     const game = await gameRepository.create({
       title: title,
       description: description,
-      players: players,
+      playerIds: playerIds,
       pictures: pictures,
     } as Game);
     return game;
@@ -237,16 +258,20 @@ describe('Test games Api', () => {
     while (number--) {
       const title = faker.name.title();
       const description = faker.name.middleName();
-      const players = [createPlayer(), createPlayer()];
+      const playerIds = [
+        (await createPlayer())._id,
+        (await createPlayer())._id,
+      ];
       const pictures = [faker.name.lastName(), faker.name.lastName()];
-      await createGame(title, description, players, pictures);
+      await createGame(title, description, playerIds, pictures);
     }
   }
-  function createPlayer() {
-    return {
+  async function createPlayer() {
+    const player = {
       firstName: faker.name.firstName(),
       lastName: faker.name.lastName(),
-      movies: [faker.name.firstName(), faker.name.lastName()],
+      birthDate: faker.date.past(),
     } as Player;
+    return await playerRepository.create(player);
   }
 });

@@ -43,7 +43,7 @@ export default class PlayerApi {
     const createUserDto: PlayerDto = {
       firstName: req.body.firstName,
       lastName: req.body.lastName,
-      movies: req.body.movies,
+      birthDate: req.body.birthDate,
     };
 
     const response = await this.playerService.createPlayer(createUserDto);
@@ -65,7 +65,7 @@ export default class PlayerApi {
       id: req.params.id,
       firstName: req.body.firstName,
       lastName: req.body.lastName,
-      movies: req.body.movies,
+      birthDate: req.body.birthDate,
     } as UpdatePlayerDto;
 
     await this.playerService.updatePlayer(updatePlayerDto);

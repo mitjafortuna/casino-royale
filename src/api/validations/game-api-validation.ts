@@ -4,8 +4,8 @@ export function createGameValidation() {
   return [
     body('title').not().isEmpty(),
     body('description').not().isEmpty(),
-    body('players').not().isEmpty().withMessage('Players should not be empty'),
-    body('players').isArray().withMessage('Players should be list'),
+    body('playerIds').not().isEmpty().withMessage('playerIds should not be empty'),
+    body('playerIds').isArray().withMessage('playerIds should be list'),
     body('pictures')
       .not()
       .isEmpty()

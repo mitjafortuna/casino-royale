@@ -5,6 +5,6 @@ export class Player implements IModel {
     public _id: string,
     public firstName: string,
     public lastName: string,
-    public movies: string[]
+    public birthDate: Date
   ) {}
 }

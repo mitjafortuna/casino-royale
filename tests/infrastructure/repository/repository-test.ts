@@ -109,16 +109,16 @@ async function clearDatabase() {
 export async function createPlayer(
   firstName?: string,
   lastName?: string,
-  movies?: string[]
+  birthDate?: Date
 ) {
   firstName = firstName ?? faker.name.firstName();
   lastName = lastName ?? faker.name.lastName();
-  movies = [faker.name.firstName(), faker.name.lastName()];
+  birthDate = faker.date.past();
   try {
     const player = await playerRepository.create({
       firstName: firstName,
       lastName: lastName,
-      movies: movies,
+      birthDate: birthDate,
     } as Player);
     return player;
   } catch (err) {
@@ -130,7 +130,7 @@ export async function createNPlayers(number: number) {
   while (number--) {
     const firstName = faker.name.firstName();
     const lastName = faker.name.lastName();
-    const movies = [faker.name.firstName(), faker.name.lastName()];
-    await createPlayer(firstName, lastName, movies);
+    const birthDate = faker.date.past();
+    await createPlayer(firstName, lastName, birthDate);
   }
 }

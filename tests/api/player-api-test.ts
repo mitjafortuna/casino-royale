@@ -43,7 +43,7 @@ describe('Test players Api', () => {
 
   describe('Create player', () => {
     async function createPlayerRequest(
-      body: { firstName?: string; lastName?: string; movies?: string[] },
+      body: { firstName?: string; lastName?: string; birthDate?: string },
       code: number,
       error?: any
     ) {
@@ -60,7 +60,7 @@ describe('Test players Api', () => {
       const body = {
         firstName: faker.name.firstName(),
         lastName: faker.name.lastName(),
-        movies: [faker.name.findName(), faker.animal.lion()],
+        birthDate: faker.date.past().toISOString().split('T')[0],
       };
       await createPlayerRequest(body, 201);
     });
@@ -68,7 +68,7 @@ describe('Test players Api', () => {
     it('response 400 if firstName field is empty', async () => {
       const body = {
         lastName: faker.name.lastName(),
-        movies: [faker.name.findName(), faker.animal.lion()],
+        birthDate: faker.date.past().toISOString().split('T')[0],
       };
       await createPlayerRequest(body, 400, [
         { msg: 'Invalid value', param: 'firstName', location: 'body' },
@@ -78,27 +78,41 @@ describe('Test players Api', () => {
     it('response 400 if lastName field is empty', async () => {
       const body = {
         firstName: faker.name.firstName(),
-        movies: [faker.name.findName(), faker.animal.lion()],
+        birthDate: faker.date.past().toISOString().split('T')[0],
       };
       await createPlayerRequest(body, 400, [
         { msg: 'Invalid value', param: 'lastName', location: 'body' },
       ]);
     });
 
-    it('response 400 if movies field is empty', async () => {
+    it('response 400 if birthDate field is empty', async () => {
       const body = {
         firstName: faker.name.firstName(),
         lastName: faker.name.lastName(),
       };
       await createPlayerRequest(body, 400, [
         {
-          msg: 'Movies should not be empty',
-          param: 'movies',
+          msg: 'birthDate should not be empty',
+          param: 'birthDate',
           location: 'body',
         },
-        { msg: 'Movies should be list', param: 'movies', location: 'body' },
+        { msg: 'Invalid value', param: 'birthDate', location: 'body' },
       ]);
     });
+
+    // it('response 400 if birthDate is not date', async () => {
+    //   const body = {
+    //     birthDate: ''
+    //   };
+    //   await createPlayerRequest(body, 400, [
+    //     {
+    //       msg: 'birthDate should not be empty',
+    //       param: 'birthDate',
+    //       location: 'body',
+    //     },
+    //     { msg: 'birthDate should be list', param: 'birthDate', location: 'body' },
+    //   ]);
+    // });
   });
 
   describe('Get player', () => {
@@ -114,7 +128,7 @@ describe('Test players Api', () => {
       assert.equal(typeof res.body, 'object');
       assert.equal(res.body.firstName, player.firstName);
       assert.equal(res.body.lastName, player.lastName);
-      assert.deepEqual(res.body.movies, player.movies);
+      assert.equal(res.body.birthDate, player.birthDate.toISOString());
     });
 
     it('response 404 if invalid id provided when get player by id', async () => {
@@ -124,22 +138,22 @@ describe('Test players Api', () => {
 
     it('response 200 with list of players when get all players', async () => {
       const res = await request(server).get('/player').expect(200);
-      assert.deepEqual(Array.isArray(res.body), true);
-      assert.deepEqual(res.body.length, 1);
+      assert.equal(Array.isArray(res.body), true);
+      assert.equal(res.body.length, 1);
     });
 
     it('response 200 with N number of players when get all players', async () => {
       await createNPlayers(5);
       const res = await request(server).get('/player').expect(200);
-      assert.deepEqual(Array.isArray(res.body), true);
-      assert.deepEqual(res.body.length, 6);
+      assert.equal(Array.isArray(res.body), true);
+      assert.equal(res.body.length, 6);
     });
 
     it('response 200 with N number of players when get all players', async () => {
       await createNPlayers(5);
       const res = await request(server).get('/player?limit=3').expect(200);
-      assert.deepEqual(Array.isArray(res.body), true);
-      assert.deepEqual(res.body.length, 3);
+      assert.equal(Array.isArray(res.body), true);
+      assert.equal(res.body.length, 3);
     });
 
     it('response 200 with N number of players from 2nd page when get all players', async () => {
@@ -147,8 +161,8 @@ describe('Test players Api', () => {
       const res = await request(server)
         .get('/player?limit=3&page=2')
         .expect(200);
-      assert.deepEqual(Array.isArray(res.body.data), true);
-      assert.deepEqual(res.body.data.length, 3);
+      assert.equal(Array.isArray(res.body.data), true);
+      assert.equal(res.body.data.length, 3);
     });
 
     it('response 200 with found players from given query when get all players', async () => {
@@ -156,11 +170,11 @@ describe('Test players Api', () => {
       const res = await request(server)
         .get('/player?firstName=' + player.firstName)
         .expect(200);
-      assert.deepEqual(Array.isArray(res.body), true);
-      assert.deepEqual(res.body.length, 1);
+      assert.equal(Array.isArray(res.body), true);
+      assert.equal(res.body.length, 1);
       assert.equal(res.body[0].firstName, player.firstName);
       assert.equal(res.body[0].lastName, player.lastName);
-      assert.deepEqual(res.body[0].movies, player.movies);
+      assert.equal(res.body[0].birthDate, player.birthDate.toISOString());
     });
   });
 
@@ -196,15 +210,15 @@ describe('Test players Api', () => {
   async function createPlayer(
     firstName?: string,
     lastName?: string,
-    movies?: string[]
+    birthDate?: Date
   ) {
     firstName = firstName ?? faker.name.firstName();
     lastName = lastName ?? faker.name.lastName();
-    movies = [faker.name.firstName(), faker.name.lastName()];
+    birthDate = faker.date.past();
     const player = await playerRepository.create({
       firstName: firstName,
       lastName: lastName,
-      movies: movies,
+      birthDate: birthDate,
     } as Player);
     return player;
   }
@@ -213,8 +227,8 @@ describe('Test players Api', () => {
     while (number--) {
       const firstName = faker.name.firstName();
       const lastName = faker.name.lastName();
-      const movies = [faker.name.firstName(), faker.name.lastName()];
-      await createPlayer(firstName, lastName, movies);
+      const birthDate = faker.date.past();
+      await createPlayer(firstName, lastName, birthDate);
     }
   }
 });

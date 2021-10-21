@@ -41,7 +41,7 @@ export default class GameApi {
     const createUserDto: CreateGameDto = {
       title: req.body.title,
       description: req.body.description,
-      players: req.body.players,
+      playerIds: req.body.playerIds,
       pictures: req.body.pictures,
     };
 
@@ -64,7 +64,7 @@ export default class GameApi {
       id: req.params.id,
       title: req.body.title,
       description: req.body.description,
-      players: req.body.players,
+      playerIds: req.body.playerIds,
       pictures: req.body.pictures,
     } as UpdateGameDto;
 

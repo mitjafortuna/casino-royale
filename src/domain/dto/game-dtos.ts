@@ -1,11 +1,10 @@
 import { FilterQuery } from 'mongodb';
 import { Game } from '../models/game';
-import { Player } from '../models/player';
 
 export interface CreateGameDto {
   title: string;
   description: string;
-  players: Player[];
+  playerIds: string[];
   pictures: string[];
 }
 
