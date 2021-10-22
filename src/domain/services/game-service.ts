@@ -87,11 +87,7 @@ export class GameService implements IGameService {
       game.description,
       game.playerIds,
       game.pictures,
-      await Promise.all(
-        game.playerIds.map(
-          async (playerId: string) => await this.playerRepository.get(playerId)
-        )
-      )
+      await this.playerRepository.find({ _id: { $in: game.playerIds } })
     );
   }
 }

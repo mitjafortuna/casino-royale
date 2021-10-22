@@ -24,12 +24,12 @@ describe('Game service test', () => {
   });
 
   describe('Test listAllGames', () => {
-    it("calls game repository's find method and player's repository get", async () => {
+    it("calls game repository's find method and player's repository find", async () => {
       // arrange
       const findMock = jest.fn(async () => [gameMock]);
       gameRepositoryMock.find = findMock;
-      const getFromPlayerRepositoryMock = jest.fn();
-      playerRepositoryMock.get = getFromPlayerRepositoryMock;
+      const findFromPlayerRepositoryMock = jest.fn();
+      playerRepositoryMock.find = findFromPlayerRepositoryMock;
       const service = new GameService(gameRepositoryMock, playerRepositoryMock);
 
       // act
@@ -37,15 +37,15 @@ describe('Game service test', () => {
 
       // assert
       expect(findMock).toBeCalled();
-      expect(getFromPlayerRepositoryMock).toBeCalled();
+      expect(findFromPlayerRepositoryMock).toBeCalled();
     });
     it('calls paginate method', async () => {
       // arrange
       const paginateSpy = jest.spyOn(paginateModule, 'paginate');
       const findMock = jest.fn(async () => [gameMock]);
       gameRepositoryMock.find = findMock;
-      const getFromPlayerRepositoryMock = jest.fn();
-      playerRepositoryMock.get = getFromPlayerRepositoryMock;
+      const findFromPlayerRepositoryMock = jest.fn();
+      playerRepositoryMock.find = findFromPlayerRepositoryMock;
       const service = new GameService(gameRepositoryMock, playerRepositoryMock);
 
       // act
@@ -59,12 +59,12 @@ describe('Game service test', () => {
   });
 
   describe('Test searchGames', () => {
-    it("calls repository's find method", async () => {
+    it("calls game repository's find method and player repository's find method", async () => {
       // arrange
       const findMock = jest.fn(async () => [gameMock]);
       gameRepositoryMock.find = findMock;
-      const getFromPlayerRepositoryMock = jest.fn();
-      playerRepositoryMock.get = getFromPlayerRepositoryMock;
+      const findFromPlayerRepositoryMock = jest.fn();
+      playerRepositoryMock.find = findFromPlayerRepositoryMock;
       const service = new GameService(gameRepositoryMock, playerRepositoryMock);
 
       // act
@@ -72,17 +72,19 @@ describe('Game service test', () => {
 
       // assert
       expect(findMock).toBeCalled();
-      expect(getFromPlayerRepositoryMock).toBeCalled();
+      expect(findFromPlayerRepositoryMock).toBeCalled();
     });
   });
 
   describe('Test createGame', () => {
-    it("calls game repository's create method and player's repository get method", async () => {
+    it("calls game repository's create method and player's repository get and find method", async () => {
       // arrange
       const createMock = jest.fn(async () => gameMock);
       gameRepositoryMock.create = createMock;
       const getFromPlayerRepositoryMock = jest.fn(async () => playerMock);
       playerRepositoryMock.get = getFromPlayerRepositoryMock;
+      const findFromPlayerRepositoryMock = jest.fn(async () => [playerMock]);
+      playerRepositoryMock.find = findFromPlayerRepositoryMock;
 
       const service = new GameService(gameRepositoryMock, playerRepositoryMock);
 
@@ -99,6 +101,7 @@ describe('Game service test', () => {
       // assert
       expect(createMock).toBeCalled();
       expect(getFromPlayerRepositoryMock).toBeCalled();
+      expect(findFromPlayerRepositoryMock).toBeCalled();
     });
     it("calls repository's create method and get method form plyerRepository returns null should throw", async () => {
       // arrange
@@ -117,12 +120,12 @@ describe('Game service test', () => {
   });
 
   describe('Test getGame', () => {
-    it("calls game and player repository's get method", async () => {
+    it("calls game repository's get method and player repository's find method", async () => {
       // arrange
       const getMock = jest.fn(async () => gameMock);
       gameRepositoryMock.get = getMock;
-      const getFromPlayerRepositoryMock = jest.fn();
-      playerRepositoryMock.get = getFromPlayerRepositoryMock;
+      const findFromPlayerRepositoryMock = jest.fn();
+      playerRepositoryMock.find = findFromPlayerRepositoryMock;
       const service = new GameService(gameRepositoryMock, playerRepositoryMock);
 
       // act
@@ -130,7 +133,7 @@ describe('Game service test', () => {
 
       // assert
       expect(getMock).toBeCalled();
-      expect(getFromPlayerRepositoryMock).toBeCalled();
+      expect(findFromPlayerRepositoryMock).toBeCalled();
     });
     it("should throw NotFoundError if game repository's get method returns null", async () => {
       // arrange
