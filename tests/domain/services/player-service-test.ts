@@ -1,18 +1,22 @@
 import {
+  GamesPlayedByPlayerDto,
   PlayerDto,
   PlayerGetDto,
   UpdatePlayerDto,
 } from '../../../src/domain/dto/player-dtos';
+import { Game } from '../../../src/domain/models/game';
 import { IRepository } from '../../../src/domain/models/interfaces/repository';
 import { Player } from '../../../src/domain/models/player';
 import { PlayerService } from '../../../src/domain/services/player-service';
 import { NotFoundError } from '../../../src/infrastructure/errors/app-errors';
-import { PlayerRepositoryMock } from '../../mocks';
+import { GameRepositoryMock, PlayerRepositoryMock } from '../../mocks';
 
 describe('Player service test', () => {
   let playerRepositoryMock: IRepository<Player>;
+  let gameRepositoryMock: IRepository<Game>;
   beforeEach(async () => {
     playerRepositoryMock = new PlayerRepositoryMock();
+    gameRepositoryMock = new GameRepositoryMock();
   });
 
   describe('Test listAllActors', () => {
@@ -20,7 +24,10 @@ describe('Player service test', () => {
       // arrange
       const findMock = jest.fn();
       playerRepositoryMock.find = findMock;
-      const service = new PlayerService(playerRepositoryMock);
+      const service = new PlayerService(
+        playerRepositoryMock,
+        gameRepositoryMock
+      );
 
       // act
       await service.getAllPlayers({ path: '' } as PlayerGetDto);
@@ -30,12 +37,40 @@ describe('Player service test', () => {
     });
   });
 
+  describe('Test getAllGamesPlayedByPlayer', () => {
+    it("calls game repository's find method and player repository's get method", async () => {
+      // arrange
+      const findMock = jest.fn();
+      gameRepositoryMock.find = findMock;
+
+      const getMock = jest.fn();
+      playerRepositoryMock.get = getMock;
+      const service = new PlayerService(
+        playerRepositoryMock,
+        gameRepositoryMock
+      );
+
+      // act
+      await service.getAllGamesPlayedByPlayer({
+        playerId: '',
+        path: '',
+      } as GamesPlayedByPlayerDto);
+
+      // assert
+      expect(findMock).toBeCalled();
+      expect(getMock).toBeCalled();
+    });
+  });
+
   describe('Test createPlayer', () => {
     it("calls repository's create method", async () => {
       // arrange
       const createMock = jest.fn();
       playerRepositoryMock.create = createMock;
-      const service = new PlayerService(playerRepositoryMock);
+      const service = new PlayerService(
+        playerRepositoryMock,
+        gameRepositoryMock
+      );
 
       const dto = {} as PlayerDto;
 
@@ -52,7 +87,10 @@ describe('Player service test', () => {
       // arrange
       const getMock = jest.fn();
       playerRepositoryMock.get = getMock;
-      const service = new PlayerService(playerRepositoryMock);
+      const service = new PlayerService(
+        playerRepositoryMock,
+        gameRepositoryMock
+      );
 
       // act
       await service.getPlayer('');
@@ -63,7 +101,10 @@ describe('Player service test', () => {
     it("should throw NotFoundError if repository's get method returns null", async () => {
       // arrange
       playerRepositoryMock.get = jest.fn(async () => null);
-      const service = new PlayerService(playerRepositoryMock);
+      const service = new PlayerService(
+        playerRepositoryMock,
+        gameRepositoryMock
+      );
 
       // act and assert
       await expect(service.getPlayer('')).rejects.toThrow(NotFoundError);
@@ -76,7 +117,10 @@ describe('Player service test', () => {
       // arrange
       const updateByIdMock = jest.fn();
       playerRepositoryMock.updateById = updateByIdMock;
-      const service = new PlayerService(playerRepositoryMock);
+      const service = new PlayerService(
+        playerRepositoryMock,
+        gameRepositoryMock
+      );
 
       const dto = {} as UpdatePlayerDto;
 
@@ -93,7 +137,10 @@ describe('Player service test', () => {
       // arrange
       const removeByIdMock = jest.fn();
       playerRepositoryMock.removeById = removeByIdMock;
-      const service = new PlayerService(playerRepositoryMock);
+      const service = new PlayerService(
+        playerRepositoryMock,
+        gameRepositoryMock
+      );
 
       // act
       await service.deletePlayer('');

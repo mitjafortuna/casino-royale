@@ -1,11 +1,12 @@
 import request from 'supertest';
 import log from '../../src/infrastructure/logger';
-import faker from 'faker';
+import faker, { unique } from 'faker';
 import db from '../../src/infrastructure/database';
 import { Player } from '../../src/domain/models/player';
 import Repository from '../../src/infrastructure/repositories/repository';
 import createServer from '../../src/infrastructure/server';
 import assert from 'assert';
+import { Game } from '../../src/domain/models/game';
 
 if (process.env.NODE_ENV !== 'test') {
   log.error('Invalid environment for tests');
@@ -15,6 +16,7 @@ if (process.env.NODE_ENV !== 'test') {
 describe('Test players Api', () => {
   let server: any;
   let playerRepository: Repository<Player>;
+  let gameRepository: Repository<Game>;
   beforeEach(async () => {
     try {
       await clearDatabase();
@@ -27,6 +29,7 @@ describe('Test players Api', () => {
     try {
       await db.connect();
       server = await createServer();
+      gameRepository = new Repository<Game>('game');
       playerRepository = new Repository<Player>('player');
     } catch (err) {
       log.error(err);
@@ -178,6 +181,33 @@ describe('Test players Api', () => {
     });
   });
 
+  describe('Get Games Played By Player', () => {
+    let player: Player;
+    let game: Game;
+    beforeEach(async () => {
+      player = await createPlayer();
+      game = await createGame(undefined, undefined, [player._id]);
+    });
+
+    it('response 200 if successfully get games played by player by id', async () => {
+      const res = await request(server)
+        .get(`/player/games/${player._id}`)
+        .expect(200);
+      assert.equal(Array.isArray(res.body), true);
+      assert.equal(res.body.length, 1);
+      assert.equal(res.body[0].title, game.title);
+      assert.equal(res.body[0].description, game.description);
+      assert.deepEqual(res.body[0].playerIds, game.playerIds);
+      assert.deepEqual(res.body[0].pictures, game.pictures);
+    });
+
+    it('response 404 if invalid id provided when get games played by player by id', async () => {
+      const res = await request(server)
+        .get('/player/games/invalidId')
+        .expect(404);
+      assert.equal(res.text, 'Player with id invalidId was not found');
+    });
+  });
   describe('Update player', () => {
     let player: Player;
     beforeEach(async () => {
@@ -195,6 +225,13 @@ describe('Test players Api', () => {
         .expect(200);
       assert.equal(typeof res1.body, 'object');
       assert.equal(res1.body.lastName, newLastName);
+    });
+  });
+
+  describe('Delete player', () => {
+    let player: Player;
+    beforeEach(async () => {
+      player = await createPlayer();
     });
 
     it('response 200 if successfully deletes player by id and 404 when trying to get delete player', async () => {
@@ -223,12 +260,36 @@ describe('Test players Api', () => {
     return player;
   }
 
-  async function createNPlayers(number: number) {
+  async function createGame(
+    title?: string,
+    description?: string,
+    playerIds?: string[],
+    pictures?: string[]
+  ) {
+    title = title ?? faker.name.title();
+    description = description ?? faker.name.middleName();
+    playerIds = playerIds ?? [
+      (await createPlayer())._id,
+      (await createPlayer())._id,
+    ];
+    pictures = pictures ?? [faker.name.lastName(), faker.name.lastName()];
+    const game = await gameRepository.create({
+      title: title,
+      description: description,
+      playerIds: playerIds,
+      pictures: pictures,
+    } as Game);
+    return game;
+  }
+
+  async function createNPlayers(number: number): Promise<Player[]> {
+    const playerArray = [];
     while (number--) {
       const firstName = faker.name.firstName();
       const lastName = faker.name.lastName();
       const birthDate = faker.date.past();
-      await createPlayer(firstName, lastName, birthDate);
+      playerArray.push(await createPlayer(firstName, lastName, birthDate));
     }
+    return playerArray;
   }
 });

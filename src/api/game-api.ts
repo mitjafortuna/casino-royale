@@ -92,6 +92,9 @@ export default class GameApi {
    * @param res
    */
   public async delete(req: Request, res: Response): Promise<void> {
+    if (!req.params.id) {
+      throw new MissingFieldError('id');
+    }
     await this.gameService.deleteGame(req.params.id);
     res.sendStatus(200);
   }

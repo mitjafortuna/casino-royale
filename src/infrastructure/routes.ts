@@ -22,6 +22,10 @@ export default function (app: Application) {
     '/player/:id',
     asyncWrap(playerApiInstance.get.bind(playerApiInstance))
   );
+  app.get(
+    '/player/games/:playerId',
+    asyncWrap(playerApiInstance.getAllGamesPlayedByPlayer.bind(playerApiInstance))
+  );  
   app.post(
     '/player',
     createPlayerValidation(),

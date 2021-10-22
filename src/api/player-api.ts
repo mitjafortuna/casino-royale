@@ -3,7 +3,7 @@ import { Request, Response } from 'express';
 import { TYPES } from '../domain/types';
 import { IPlayerService } from '../domain/services/interfaces/player-service';
 import { MissingFieldError } from '../infrastructure/errors/app-errors';
-import { PlayerDto, UpdatePlayerDto } from '../domain/dto/player-dtos';
+import { GamesPlayedByPlayerDto, PlayerDto, UpdatePlayerDto } from '../domain/dto/player-dtos';
 import { validationResult } from 'express-validator';
 
 @injectable()
@@ -27,6 +27,29 @@ export default class PlayerApi {
     });
     res.send(response);
   }
+
+  public async getAllGamesPlayedByPlayer(
+    req: Request,
+    res: Response
+  ): Promise<void> {
+    if (!req.params.playerId) {
+      throw new MissingFieldError('playerId');
+    }
+    // clone query object and delete limit and page property
+    const filter = { ...req.query };
+    delete filter.limit;
+    delete filter.page;
+    const response = await this.playerService.getAllGamesPlayedByPlayer({
+      path: req.path,
+      limit: req.query?.limit ? parseInt(req.query.limit as string) : undefined,
+      pageNumber: req.query?.page
+        ? parseInt(req.query.page as string)
+        : undefined,
+      playerId: req.params.playerId,
+    } as GamesPlayedByPlayerDto);
+    res.send(response);
+  }
+
 
   /**
    * Create player
@@ -78,6 +101,9 @@ export default class PlayerApi {
    * @param res
    */
   public async get(req: Request, res: Response): Promise<void> {
+    if (!req.params.id) {
+      throw new MissingFieldError('id');
+    }
     const player = await this.playerService.getPlayer(req.params.id);
     res.send(player);
   }
@@ -88,6 +114,9 @@ export default class PlayerApi {
    * @param res
    */
   public async delete(req: Request, res: Response): Promise<void> {
+    if (!req.params.id) {
+      throw new MissingFieldError('id');
+    }
     await this.playerService.deletePlayer(req.params.id);
     res.sendStatus(200);
   }

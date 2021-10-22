@@ -17,3 +17,10 @@ export interface PlayerGetDto {
   filter?: FilterQuery<Partial<Player>>;
   path: string;
 }
+
+export interface GamesPlayedByPlayerDto {
+  playerId: string;
+  limit?: number;
+  pageNumber?: number;
+  path: string;
+}
