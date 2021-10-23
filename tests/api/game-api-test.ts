@@ -1,3 +1,4 @@
+/* eslint-disable @typescript-eslint/no-explicit-any */
 import request from 'supertest';
 import log from '../../src/infrastructure/logger';
 import faker from 'faker';

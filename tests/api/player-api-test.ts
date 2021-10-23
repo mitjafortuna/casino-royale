@@ -1,6 +1,7 @@
+/* eslint-disable @typescript-eslint/no-explicit-any */
 import request from 'supertest';
 import log from '../../src/infrastructure/logger';
-import faker, { unique } from 'faker';
+import faker from 'faker';
 import db from '../../src/infrastructure/database';
 import { Player } from '../../src/domain/models/player';
 import Repository from '../../src/infrastructure/repositories/repository';

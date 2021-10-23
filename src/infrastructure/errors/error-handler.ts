@@ -35,6 +35,7 @@ export default function (app: Application) {
   );
 
   // Log all errors
+  // eslint-disable-next-line @typescript-eslint/no-explicit-any
   app.use(function (err: any, req: Request, res: Response, next: NextFunction) {
     const userString = 'unknown user';
 

@@ -1,3 +1,5 @@
+/* eslint-disable @typescript-eslint/no-explicit-any */
+/* eslint-disable @typescript-eslint/no-unused-vars */
 import { IRepository } from '../src/domain/models/interfaces/repository';
 import { Game } from '../src/domain/models/game';
 import { Player } from '../src/domain/models/player';
