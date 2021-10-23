@@ -1,0 +1,14 @@
+.github
+.vscode
+data
+dist
+img
+logs
+node_modules
+test
+.env
+.eslintignore
+.eslintrc
+test-report.xml
+docker-compose.yml
+yarn-error.log

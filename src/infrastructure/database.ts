@@ -47,7 +47,7 @@ class Database {
     });
 
     this.dbClient = await client.connect();
-    logger.info('Connected with database host');
+    logger.info(`Connected with database host ${this.host}.`);
 
     this.databaseInstance = this.dbClient.db(this.dbName);
   }
@@ -91,24 +91,7 @@ class Database {
     if (process.env.NODE_ENV !== 'localhost' && this.user && this.password) {
       return `mongodb://${this.user}:${this.password}@${this.host}/${this.dbName}`;
     }
-
     return `mongodb://${this.host}/${this.dbName}`;
-  }
-
-  public getDbHost() {
-    return this.host;
-  }
-
-  public getDbPassword() {
-    return this.password;
-  }
-
-  public getDbUser() {
-    return this.user;
-  }
-
-  public getDbName() {
-    return this.dbName;
   }
 
   public isDbConnected() {

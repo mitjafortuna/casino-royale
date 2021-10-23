@@ -23,8 +23,11 @@ With interfaces between each layer it's easy to mock the dependencies that are n
 
 ## How to build and start the application
 
-* For package manager [Yarn](https://yarnpkg.com/) is used. If you don't already have it installed you can install it globally with `npm install yarn -g`.
-* After that the command `yarn build` can be executed to transpile TypeScript to JavaScript.
-* Application uses MongoDB for data persistance. You can [download](https://www.mongodb.com/try/download/community) and install it locally or if you don't have it already installed and you have [docker](https://www.docker.com/) you can run commands `docker pull mongo` and `docker run -d -p 27017:27017 mongo`.
-* The application can be run with command `yarn start`.
-* Api documentation can be found on [http://localhost:4000/api-docs](http://localhost:4000/api-docs).
+* If you have docker installed you can just run: `docker-compose up`. It will build and run the app. It will also download and run MongoDb image.
+
+* If you don't have docker installed:
+  * For package manager [Yarn](https://yarnpkg.com/) is used. If you don't already have it installed you can install it globally with `npm install yarn -g`.
+  * After that the command `yarn build` can be executed to transpile TypeScript to JavaScript.
+  * Application uses MongoDB for data persistance. You can [download](https://www.mongodb.com/try/download/community) and install it locally or if you don't have it already installed and you have [docker](https://www.docker.com/) you can run commands `docker pull mongo` and `docker run -d -p 27017:27017 mongo`.
+  * The application can be run with command `yarn start`.
+  * Api documentation can be found on [http://localhost:4000/api-docs](http://localhost:4000/api-docs).

@@ -9,7 +9,7 @@
     "start": "NODE_ENV=localhost node ./dist/src/app.js",
     "build": "rimraf ./dist && tsc && copyfiles ./openapi.yml ./dist/src/infrastructure",
     "build-prod": "rimraf ./dist && tsc -p tsconfig.prod.json",
-    "pretest": "yarn run build",
+    "pretest": "yarn build",
     "test": "NODE_ENV=test jest --runInBand ./dist/tests/",
     "lint": "eslint . --ext .ts"
   },
