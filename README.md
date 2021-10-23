@@ -14,7 +14,7 @@ Layers are separated by interfaces. They define behavior contracts and stand as 
 
 ## Continuous integration
 
-Also added simple [CI workflow](/actions/workflows/ci.yaml) on `Github actions` that triggers on each push to the server.
+Also added simple [CI workflow](https://github.com/mitjafortuna/casino-royale/actions) on `Github actions` that triggers on each push to the server.
 The workflow checks if all dependencies can be installed and builded. There is also static code analysis check, done with [linting](https://en.wikipedia.org/wiki/Lint_(software)) to ensure there is no stylistic errors and suspicions constructs. It also check if all test ran without errors.
 
 ## Testing
