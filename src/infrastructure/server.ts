@@ -6,9 +6,11 @@ import compress from 'compression';
 import cors from 'cors';
 import errorHandler from './errors/error-handler';
 import logger from './logger';
-import routes from './routes';
+import { GameRoutes, PlayerRoutes } from './routes';
 import dotenv from 'dotenv';
 import requestCountLogger from './request-count-logger';
+import YAML from 'yamljs';
+import swaggerUI from 'swagger-ui-express';
 dotenv.config();
 
 export default async function createServer() {
@@ -45,7 +47,16 @@ export default async function createServer() {
   /**
    * Configure routes
    */
-  routes(server);
+  PlayerRoutes(server);
+  GameRoutes(server);
+
+  const swaggerDocument = YAML.load('./openapi.yml');
+
+  server.use(
+    '/api-docs',
+    swaggerUI.serve,
+    swaggerUI.setup(swaggerDocument)
+  );
 
   /**
    * Configure error handler

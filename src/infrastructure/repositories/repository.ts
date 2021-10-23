@@ -1,10 +1,6 @@
 import { injectable, unmanaged } from 'inversify';
 import { Collection, FilterQuery } from 'mongodb';
-import {
-  IRepository,
-  Select,
-  Sort,
-} from '../../domain/models/interfaces/repository';
+import { IRepository } from '../../domain/models/interfaces/repository';
 import db from '../database';
 import { NotFoundError } from '../errors/app-errors';
 import { v4 as uuid } from 'uuid';
@@ -17,19 +13,17 @@ import { IModel } from '../../domain/models/interfaces/model';
 
  */
 @injectable()
-export default class Repository<T extends IModel>
-  implements IRepository<T>
-{
+export default class Repository<T extends IModel> implements IRepository<T> {
   private readonly collection: Collection;
 
   constructor(@unmanaged() collection: string) {
     this.collection = db.getCollection(collection);
   }
 
-  public async get(_id: string, select: Select = {}): Promise<T | null> {
+  public async get(_id: string): Promise<T | null> {
     const collection = this.collection;
 
-    const doc: T | null = await collection.findOne<T>({ _id: _id }, select);
+    const doc: T | null = await collection.findOne<T>({ _id: _id });
 
     return doc;
   }
@@ -37,16 +31,10 @@ export default class Repository<T extends IModel>
   public async find(
     filter: FilterQuery<Partial<T>> = {},
     limit = 10,
-    page = 0,
-    select?: Select,
-    sort?: Sort
+    page = 0
   ): Promise<T[]> {
     const collection = this.collection;
-    const query = collection.find<T>(filter, select);
-
-    if (sort) {
-      query.sort(sort);
-    }
+    const query = collection.find<T>(filter);
 
     if (page > 0) {
       const skip = limit * (page - 1);

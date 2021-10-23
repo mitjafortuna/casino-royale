@@ -2,7 +2,11 @@
 
 ## About architecture
 
-The solution was implemented with [SOLID](https://en.wikipedia.org/wiki/SOLID) principles and [Onion Architecture](https://jeffreypalermo.com/2008/07/the-onion-architecture-part-1/) mind. Main focus is on maintainability with emphasis on separation of concerns throughout the system. Layers are separated by interfaces. They define behavior contracts and stand as foundations amongst the layers. It is also easy to write different implementation of the interface. For example: if for some reason would like to change how and where the data is stored, one could simply write different implementation of repository without the need to change any business logic.
+The solution was implemented with [SOLID](https://en.wikipedia.org/wiki/SOLID) principles and [Onion Architecture](https://jeffreypalermo.com/2008/07/the-onion-architecture-part-1/) in mind. Main focus of this approach is on maintainability with emphasis on separation of concerns throughout the system.
+
+![Onion architecture diagram](./img/onion.png)
+
+Layers are separated by interfaces. They define behavior contracts and stand as foundations amongst the layers. It is also easy to write different implementation of the interface. For example: if for some reason would like to change how and where the data is stored, one could simply write different implementation of repository without the need to change any business logic.
 
 ## Data persistance choice
 

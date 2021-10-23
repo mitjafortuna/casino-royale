@@ -1,0 +1,328 @@
+openapi: 3.0.0
+info:
+  title: Casino Royale API
+  version: 1.0.0
+host: http://localhost:4000
+paths:
+  /player:
+    get:
+      tags:
+        - Player
+      summary: Gets players
+      description: Filter and pagination support.
+      parameters:
+        - in: query
+          name: limit
+          description: The numbers of items to return
+          schema:
+            type: integer
+        - in: query            
+          name: page
+          description: Current page of all possible pages
+          schema:
+            type: integer
+        - in: query
+          name: firstName
+          description: Filtering by first name
+          schema:
+            type: string
+        - in: query
+          name: lastName
+          description: Filtering by last name
+          schema:
+            type: string          
+      responses:
+        '200':
+          description: Players were returned.
+    post:
+      tags:
+        - Player
+      summary: Create a player
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              additionalProperties: false
+              required:
+                - firstName
+                - lastName
+                - birthDate
+              properties:
+                firstName:
+                  type: string
+                lastName:
+                  type: string
+                birthDate:
+                  type: string
+                  format: date
+      responses:
+        '201':
+          description: Player was created.
+        '400':
+          description: Error occurred.
+  /player/{id}:
+    get:
+      tags:
+        - Player
+      summary: Gets player by id
+      description: Gets specific player by it's id.
+      parameters:
+        - in: path
+          name: id
+          description: Id of the player
+          schema:
+            type: string
+            format: uuid
+          required: true
+      responses:
+        '200':
+          description: Success
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  title:
+                    type: string
+                  description:
+                    type: string
+                  pictures:
+                    type: string
+        '404':
+          description: Player not found.
+    patch:
+      tags:
+        - Player
+      summary: Update a player
+      parameters:
+        - in: path
+          name: id
+          description: Id of the player
+          schema:
+            type: string
+            format: uuid
+          required: true      
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              additionalProperties: false
+              properties:
+                firstName:
+                  type: string
+                lastName:
+                  type: string
+                birthDate:
+                  type: string
+                  format: date
+      responses:
+        '200':
+          description: Player was updated.
+        '400':
+          description: Error occurred.          
+    delete:
+      tags:
+        - Player
+      summary: Deletes player by id
+      description: Deletes specific player by it's id.
+      parameters:
+        - in: path
+          name: id
+          description: Id of the player
+          required: true
+          schema:
+            type: string
+            format: uuid
+      responses:
+        '200':
+          description: Player successfully deleted
+        '404':
+          description: Player not found.
+  /player/games/{id}:
+    get:
+      tags:
+        - Player
+      summary: Gets all games played by player
+      parameters:
+        - in: path
+          name: id
+          description: Id of the player
+          required: true
+          schema:
+            type: string
+            format: uuid          
+      responses:
+        '200':
+          description: Games played by player was returned.
+        '404':
+          description: Player not found.
+  /game:
+    get:
+      tags:
+        - Game
+      summary: Gets games
+      description: Filter and pagination support.
+      responses:
+        '200':
+          description: Games were returned.
+      parameters:
+        - in: query
+          name: limit
+          schema:
+            type: integer
+          description: The numbers of items to return
+        - in: query
+          name: page
+          schema:
+            type: integer
+          description: Current page of all possible pages
+        - in: query
+          name: firstName
+          schema:
+            type: string
+          description: Filtering by title
+        - in: query
+          name: description
+          schema:
+            type: string
+          description: Filtering by description
+    post:
+      tags:
+        - Game
+      summary: Create a game
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              additionalProperties: false
+              required:
+                - title
+                - description
+                - pictures
+              properties:
+                title:
+                  type: string
+                description:
+                  type: string
+                pictures:
+                  type: array
+                  items:
+                    type: string
+                playerIds:
+                  type: array
+                  items:
+                    type: string
+                    format: uuid
+      responses:
+        '201':
+          description: Player was created.
+        '400':
+          description: Error occurred.
+  /game/{id}:
+    get:
+      tags:
+        - Game
+      summary: Gets game by id
+      description: Gets specific game by it's id.
+      parameters:
+        - in: path
+          name: id
+          schema:
+            type: string
+            format: uuid
+          description: Id of the game
+          required: true
+      responses:
+        '200':
+          description: Success
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  _id:
+                    type: string
+                    format: uid
+                  title:
+                    type: string
+                  description:
+                    type: string
+                  pictures:
+                    type: string
+                  players:
+                    type: array
+                    items:
+                      type: object
+                      properties:
+                        firstName:
+                          type: string
+                        lastName:
+                          type: string
+                        birthDate:
+                          type: string
+                          format: date
+        '404':
+          description: Game not found.
+    patch:
+      tags:
+        - Game
+      summary: Update a game
+      parameters:
+        - in: path
+          name: id
+          description: Id of the game
+          schema:
+            type: string
+            format: uuid
+          required: true      
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              additionalProperties: false
+              properties:
+                title:
+                  type: string
+                description:
+                  type: string
+                pictures:
+                  type: array
+                  items:
+                    type: string
+      responses:
+        '200':
+          description: Game was updated.
+        '400':
+          description: Error occurred.
+    delete:
+      tags:
+        - Game
+      summary: Deletes game by id
+      description: Deletes specific game by it's id.
+      parameters:
+        - in: path
+          name: id
+          description: Id of the game
+          required: true
+          schema:
+            type: string
+            format: uuid
+      responses:
+        '200':
+          description: Game successfully deleted
+        '404':
+          description: Game not found.
+components: {}
+tags:
+  - name: Player
+    description: API to read and manage players
+  - name: Game
+    description: API to read and manage games
